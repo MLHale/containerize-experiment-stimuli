@@ -14,15 +14,13 @@ parser.add_argument('-l', '-links', type=str, help='target url to replace conten
 args = parser.parse_args()
 
 def csvparsejs(target):
-    # target = pd.read_csv(args.csvfile, names=['col0', 'col1', 'col2'], encoding='ISO-8859-1')
     cols = target.columns.values
     for idx, line in enumerate(target[cols[1]]):
         if line != None:
             try:
                 print("containerizing {}".format(line))
                 print("containerizing js rendered html")
-                #collect html
-                webdriver_path = 'path-to-webdriver'
+                webdriver_path = '' #Replace with chrome webdriver path
                 chrome_options = Options()
                 chrome_options.add_argument('--headless')
                 chrome_options.add_argument('--window-size=1920x1080')
@@ -46,6 +44,8 @@ def csvparsejs(target):
                     soup('a')[a]["onclick"] = "return false;"
                 for p in range(len(soup('input'))):
                     soup('input')[p]["onclick"] = "return false;"
+                for b in range(len(soup('button'))):
+                    soup('input')[b]["onclick"] = "return false;"
 
                 #remove script tags
                 for script in soup("script"):
@@ -55,6 +55,15 @@ def csvparsejs(target):
                 for iframe in soup("iframe"):
                     soup.iframe.extract()
 
+                # remove .ico requests
+                rels = soup.findAll("link", attrs={"rel": "shortcut icon"})
+                for rel in rels:
+                    rel.extract()
+
+                irels = soup.findAll("link", attrs={"rel": "icon"})
+                for irel in irels:
+                    irel.extract()
+
                 #replace links
                 if target[cols[2]][idx] != None:
                     for a in soup.findAll('a'):
@@ -62,7 +71,7 @@ def csvparsejs(target):
                         print(str(target[cols[2]][idx]))
 
                 #output sandboxed html
-                with open("{}_inlined_js.html".format(str(target[cols[0]][idx])), "w") as file:
+                with open("{}_contained_js.html".format(str(target[cols[0]][idx])), "w") as file:
                     file.write(str(soup))
                 file.close()
                 print("js rendered html of {} successfully containerized".format(line))
@@ -72,7 +81,6 @@ def csvparsejs(target):
     return 0
 
 def csvparsestatic(target2):
-    # target2 = pd.read_csv(args.csvfile, names=['col0', 'col1', 'col2'], encoding='ISO-8859-1')
     cols = target2.columns.values
     for idx2, line2 in enumerate(target2[cols[1]]):
         if line2 != None:
@@ -90,6 +98,8 @@ def csvparsestatic(target2):
                     soup('a')[a]["onclick"] = "return false;"
                 for p in range(len(soup('input'))):
                     soup('input')[p]["onclick"] = "return false;"
+                for b in range(len(soup('button'))):
+                    soup('input')[b]["onclick"] = "return false;"
 
                 # remove script tags
                 for script in soup("script"):
@@ -99,6 +109,15 @@ def csvparsestatic(target2):
                 for iframe in soup("iframe"):
                     soup.iframe.extract()
 
+                # remove .ico requests
+                rels = soup.findAll("link", attrs={"rel": "shortcut icon"})
+                for rel in rels:
+                    rel.extract()
+
+                irels = soup.findAll("link", attrs={"rel": "icon"})
+                for irel in irels:
+                    irel.extract()
+
                 #replace links
                 if target2[cols[2]][idx2] != None:
                     for a in soup.findAll('a'):
@@ -106,7 +125,7 @@ def csvparsestatic(target2):
                         print(str(target2[cols[2]][idx2]))
 
                 # output sandboxed html
-                with open("{}_inlined.html".format(str(target2[cols[0]][idx2])), "w") as file:
+                with open("{}_contained_static.html".format(str(target2[cols[0]][idx2])), "w") as file:
                     file.write(str(soup))
                 file.close()
                 print("{} successfully containerized static html".format(line2))
@@ -119,7 +138,7 @@ def singlesitejs():
     try:
         print("containerizing js rendered html")
         # collect html
-        webdriver_path = '/Users/gabiwethor/PycharmProjects/Python3_Projects/chromedriver'
+        webdriver_path = '' #Replace with chrome webdriver path
         chrome_options = Options()
         chrome_options.add_argument('--headless')
         chrome_options.add_argument('--window-size=1920x1080')
@@ -127,12 +146,12 @@ def singlesitejs():
         browser.get(args.url)
         pagesource = browser.page_source.encode('utf-8')
         sleep(10)
-        html = open("source.html", "w", encoding="utf-8")
+        html = open("js_source.html", "w", encoding="utf-8")
         html.write(str(pagesource))
         html.close()
 
         sleep(5)
-        inlinedhtml = htmlark.convert_page("source.html", ignore_errors=True)
+        inlinedhtml = htmlark.convert_page("js_source.html", ignore_errors=True)
 
         # remove whitespace
         inlinedhtml = ' '.join(inlinedhtml.split())
@@ -143,6 +162,8 @@ def singlesitejs():
             soup('a')[a]["onclick"] = "return false;"
         for p in range(len(soup('input'))):
             soup('input')[p]["onclick"] = "return false;"
+        for b in range(len(soup('button'))):
+            soup('input')[b]["onclick"] = "return false;"
 
         # remove script tags
         for script in soup("script"):
@@ -152,6 +173,15 @@ def singlesitejs():
         for iframe in soup("iframe"):
             soup.iframe.extract()
 
+        # remove .ico requests
+        rels = soup.findAll("link", attrs={"rel": "shortcut icon"})
+        for rel in rels:
+            rel.extract()
+
+        irels = soup.findAll("link", attrs={"rel": "icon"})
+        for irel in irels:
+            irel.extract()
+
         #replace links
         if args.links:
             for a in soup.findAll('a'):
@@ -159,7 +189,7 @@ def singlesitejs():
             print(str(args.links))
 
         # output sandboxed html
-        with open("inlined.html", "w") as file:
+        with open("contained_js.html", "w") as file:
             file.write(str(soup))
         file.close()
         print("js rendered html of {} successfully containerized".format(args.url))
@@ -169,10 +199,10 @@ def singlesitejs():
 
 def singlesitestatic():
     try:
-        urllib.request.urlretrieve(args.url, "source.html")
+        urllib.request.urlretrieve(args.url, "static_source.html")
         sleep(5)
 
-        inlinedhtml = htmlark.convert_page("source.html", ignore_errors=True)
+        inlinedhtml = htmlark.convert_page("static_source.html", ignore_errors=True)
 
         # remove whitespace
         inlinedhtml = ' '.join(inlinedhtml.split())
@@ -183,6 +213,8 @@ def singlesitestatic():
             soup('a')[a]["onclick"] = "return false;"
         for p in range(len(soup('input'))):
             soup('input')[p]["onclick"] = "return false;"
+        for b in range(len(soup('button'))):
+            soup('input')[b]["onclick"] = "return false;"
 
         # remove script tags
         for script in soup("script"):
@@ -192,13 +224,22 @@ def singlesitestatic():
         for iframe in soup("iframe"):
             soup.iframe.extract()
 
+        # remove .ico requests
+        rels = soup.findAll("link", attrs={"rel": "shortcut icon"})
+        for rel in rels:
+            rel.extract()
+
+        irels = soup.findAll("link", attrs={"rel": "icon"})
+        for irel in irels:
+            irel.extract()
+
         if args.links:
             for a in soup.findAll('a'):
                 a['href'] = str(args.links)
             print(str(args.links))
 
         # output sandboxed html
-        with open("inlined.html", "w") as file:
+        with open("contained_static.html", "w") as file:
             file.write(str(soup))
         file.close()
         print("static html of {} successfully containerized".format(args.url))
@@ -215,6 +256,7 @@ if args.csvfile:
 elif args.url:
     singlesitejs()
     singlesitestatic()
+    print("End")
 
 else:
     print("Please provide website url or csv file")
