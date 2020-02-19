@@ -15,7 +15,7 @@ This software introduces a new method for replicating and sandboxing dynamic and
 ## Requirements
 * [ChromeDriver](http://chromedriver.chromium.org/downloads) Version 2.46
     * Must declare the path to the ChromeDriver in contain.py before use
-* Windows, MacOS, or Linux or OS acceptable
+* Windows, MacOS, or Linux 
 
 ## Installation
 ```
@@ -27,18 +27,18 @@ pip3 install argparse
 pip3 install beautifulsoup4
 pip3 install urllib3
 pip3 install pandas
-git clone https://github.com/gewethor/containerize-experiment-stimuli
+git clone https://github.com/MLHale/study-sandboxx
 ```
 ## Getting started
 ### Configuring Path to web driver
-Within the contain.py script, the Chrome Driver needs to be in PATH. On lines 23 and 141, change the following to include the PATH to chomedriver.exe
+Within the contain.py script, the Chrome Driver needs to be in PATH. On lines 23 and 141, change the following to include the PATH to chomedriver.exe (or linux/mac equivalent)
 
 ```cs
 webdriver_path = '' #Replace with chrome webdriver path
 ```
 
 ### Basic usage - Single Website
-To sandbox and encapsulate a single website simply:
+To sandbox, encapsulate, and download a single website simply:
 
 ```
 python3 contain.py -u [web address of site]
