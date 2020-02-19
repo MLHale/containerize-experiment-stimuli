@@ -1,4 +1,4 @@
-# Containerize Experiment Stimuli
+# StudySandboxx: Encapsulate and Sandbox Experiment Stimuli
 This software introduces a new method for replicating and sandboxing dynamic and static web content in a high-fidelity way that preserves the dynamism, interactability, and aesthetic quality of the original. The output of this script will include the web content before containerization, the containerized content with support for JS-rendered content, and containzerized content without JS-rendering.
 
 # Features 
@@ -127,4 +127,4 @@ node compare.js https://www.facebook.com
 [Output](docs/testing_output/compare_output.png) 
 
 ## License 
-containerize-experiment-stimuli is released under the MIT license, which may be found in the LICENSE file
+StudySandboxx is released under the MIT license, which may be found in the LICENSE file
